@@ -4,17 +4,17 @@ var glheight = 1000;
 var client = dgram.createSocket('udp4');
 
 client.bind(6668);
-  client.pixelWaiting = [];
-  //{callback: function(pixel, color){code}, pixel: [100, 100]}
-  client.on('message', function(msg, rinfo) {
-    console.log(msg.toString('ascii'), rinfo.address, rinfo.port);
+client.pixelWaiting = [];
+//{callback: function(pixel, color){code}, pixel: [100, 100]}
+client.on('message', function(msg, rinfo) {
+  console.log(msg.toString('ascii'), rinfo.address, rinfo.port);
 
-    var msgA = msg.toString('ascii').split(" ");
-    var pixel = [msgA[0], msgA[1]]
-    var color = {r: msgA[2], g: msgA[3], b: msgA[4]}
-  // console.log(pixel)
-  executePixel(pixel, color, client.pixelWaiting)
-  });
+  var msgA = msg.toString('ascii').split(" ");
+  var pixel = [msgA[0], msgA[1]]
+  var color = {r: msgA[2], g: msgA[3], b: msgA[4]}
+// console.log(pixel)
+executePixel(pixel, color, client.pixelWaiting)
+});
 
 var executePixel = function(pixel, color, callbacks){
 
@@ -34,7 +34,7 @@ var setPixel = function(pixel,color,socket,callback){
   if(color.constructor.toString().indexOf("Array") > -1 && color.length === 3){
     color = {r: color[0], g: color[1], b: color[2]}
   } 
-  var msg = new Buffer('set '+pixel[0]+' '+pixel[y]+' '+color.r+' '+color.g+' '+color.b);
+  var msg = new Buffer('set '+pixel[0]+' '+pixel[1]+' '+color.r+' '+color.g+' '+color.b);
   socket.send(msg, 0, msg.length, 6668, '10.0.0.30', callback)
 }
 var getPixel = function(pixel,socket,callback){
@@ -76,7 +76,7 @@ var fn = function(x,y,sx,sy,l){
   //var r = Math.min(Math.max(0,Math.round((Math.random()-0.5)*3)+r),255);
   //var g = Math.min(Math.max(0,Math.round((Math.random()-0.5)*5)+g),255);
   // var b = Math.min(Math.max(0,Math.round((Math.random()-0.5)*2)+b), 255);
-  var msg = new Buffer('set '+Math.round(sx)+' '+Math.round(sy)+' 235 30 97'); 
+  //var msg = new Buffer('set '+Math.round(sx)+' '+Math.round(sy)+' 235 30 97'); 
   //var msg2 = new Buffer('set '+x+' '+y+' 223 123 80'); 
   var nx = Math.round((Math.random()-0.5)*20+x);
   var ny = Math.round((Math.random()-0.5)*20+y);
@@ -97,7 +97,7 @@ var fn = function(x,y,sx,sy,l){
   if (l > 0){
     setTimeout(function(){
       //client.send(msg2, 0, msg2.length, 6668, '10.0.0.30')
-      client.send(msg, 0, msg.length, 6668, '10.0.0.30', fx)
+      setPixel([Math.round(sx),Math.round(sy)],[234,30,97],client,fx)
     }, 7)
   } else {
     c--
